@@ -48,6 +48,7 @@ jobs:
           schema = "$SNOWSQL_SCHEMA"
           authenticator = "snowflake"
           EOF
+          chmod 0600 ~/.snowflake/config.toml
 
       - name: Run Snowflake Stored Procedure
         run: snow sql --connection-name default --query "CALL OPS.SP_FILE_INGEST_DUMP();"
