@@ -23,8 +23,7 @@ jobs:
           pip install --user snowflake-cli
           echo "$(python -m site --user-base)/bin" >> $GITHUB_PATH
           export PATH="$(python -m site --user-base)/bin:$PATH"
-          ls -l "$(python -m site --user-base)/bin"
-          snowflake --help
+          snow --help
 
       - name: Run Snowflake Stored Procedure
         env:
@@ -36,7 +35,7 @@ jobs:
           SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
           SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
         run: |
-          snowflake sql -a $SNOWFLAKE_ACCOUNT -u $SNOWFLAKE_USER -p $SNOWFLAKE_PASSWORD \
+          snow sql -a $SNOWFLAKE_ACCOUNT -u $SNOWFLAKE_USER -p $SNOWFLAKE_PASSWORD \
           -r $SNOWFLAKE_ROLE -w $SNOWFLAKE_WAREHOUSE -d $SNOWFLAKE_DATABASE -s $SNOWFLAKE_SCHEMA \
           -q "CALL OPS.SP_FILE_INGEST_DUMP();"
 
