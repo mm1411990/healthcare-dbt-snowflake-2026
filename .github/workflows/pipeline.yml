@@ -98,8 +98,5 @@ jobs:
             target: dev
           EOF
 
-      - name: Run dbt models
-        run: |
-          dbt run --select silver/*
-          dbt run --select gold/*
-          dbt test
+      - name: Run dbt build
+        run: dbt build
