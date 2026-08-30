@@ -20,7 +20,7 @@ jobs:
       - name: Install Snowflake CLI
         run: |
           pip install --upgrade pip
-          pip install snowflake-cli
+          pip install --user snowflake-cli
           echo "$(python -m site --user-base)/bin" >> $GITHUB_PATH
 
       - name: Run Snowflake Stored Procedure
