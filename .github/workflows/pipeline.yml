@@ -17,10 +17,18 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Cache pip dependencies (CLI)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-cli-${{ hashFiles('requirements-cli.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-cli-
+
       - name: Install Snowflake CLI
         run: |
           pip install --upgrade pip
-          pip install --user snowflake-cli
+          pip install --user -r requirements-cli.txt
           echo "$(python -m site --user-base)/bin" >> $GITHUB_PATH
           export PATH="$(python -m site --user-base)/bin:$PATH"
 
@@ -65,18 +73,18 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Cache pip dependencies
+      - name: Cache pip dependencies (dbt)
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          key: ${{ runner.os }}-pip-dbt-${{ hashFiles('requirements-dbt.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-
+            ${{ runner.os }}-pip-dbt-
 
       - name: Install dbt
         run: |
           pip install --upgrade pip
-          pip install --user -r requirements.txt
+          pip install --user -r requirements-dbt.txt
           echo "$(python -m site --user-base)/bin" >> $GITHUB_PATH
           export PATH="$(python -m site --user-base)/bin:$PATH"
 
