@@ -17,18 +17,10 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Cache pip dependencies (CLI)
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-cli-${{ hashFiles('requirements-cli.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-cli-
-
       - name: Install Snowflake CLI
         run: |
           pip install --upgrade pip
-          pip install --user -r requirements-cli.txt
+          pip install --user snowflake-cli-labs==3.25.0
           echo "$(python -m site --user-base)/bin" >> $GITHUB_PATH
           export PATH="$(python -m site --user-base)/bin:$PATH"
 
@@ -73,20 +65,38 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Cache pip dependencies (dbt)
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-dbt-${{ hashFiles('requirements-dbt.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-dbt-
-
       - name: Install dbt
         run: |
           pip install --upgrade pip
-          pip install --user -r requirements-dbt.txt
+          pip install --user dbt-snowflake==1.8.2
           echo "$(python -m site --user-base)/bin" >> $GITHUB_PATH
           export PATH="$(python -m site --user-base)/bin:$PATH"
+
+      - name: Configure dbt profile
+        env:
+          SNOWSQL_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWSQL_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWSQL_PWD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          SNOWSQL_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+          SNOWSQL_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          SNOWSQL_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+        run: |
+          mkdir -p ~/.dbt
+          cat > ~/.dbt/profiles.yml <<EOF
+          healthcare_snow_dbt:
+            outputs:
+              dev:
+                type: snowflake
+                account: $SNOWSQL_ACCOUNT
+                user: $SNOWSQL_USER
+                password: $SNOWSQL_PWD
+                role: $SNOWSQL_ROLE
+                warehouse: $SNOWSQL_WAREHOUSE
+                database: $SNOWSQL_DATABASE
+                schema: silver
+                threads: 1
+            target: dev
+          EOF
 
       - name: Run dbt models
         run: |
