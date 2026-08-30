@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  pipeline:
+  bronze_ingest:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -17,10 +17,10 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Snowflake CLI and dbt
+      - name: Install Snowflake CLI
         run: |
           pip install --upgrade pip
-          pip install --user snowflake-cli dbt-core dbt-snowflake
+          pip install --user snowflake-cli
           echo "$(python -m site --user-base)/bin" >> $GITHUB_PATH
           export PATH="$(python -m site --user-base)/bin:$PATH"
 
@@ -34,8 +34,34 @@ jobs:
           SNOWSQL_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
           SNOWSQL_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
           SNOWSQL_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
+        run: snow sql --query "CALL OPS.SP_FILE_INGEST_DUMP();"
+
+  dbt_transform:
+    runs-on: ubuntu-latest
+    needs: bronze_ingest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dbt
         run: |
-          snow sql --query "CALL OPS.SP_FILE_INGEST_DUMP();"
+          pip install --upgrade pip
+          pip install --user -r requirements.txt
+          echo "$(python -m site --user-base)/bin" >> $GITHUB_PATH
+          export PATH="$(python -m site --user-base)/bin:$PATH"
 
       - name: Run dbt models
         env:
