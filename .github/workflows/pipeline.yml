@@ -18,7 +18,9 @@ jobs:
           python-version: '3.10'
 
       - name: Install Snowflake CLI
-        run: pip install snowflake-cli
+        run: |
+          pip install --upgrade pip
+          pip install snowflake-cli
 
       - name: Run Snowflake Stored Procedure
         env:
@@ -30,7 +32,7 @@ jobs:
           SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
           SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
         run: |
-          snowflake sql -a $SNOWFLAKE_ACCOUNT -u $SNOWFLAKE_USER -p $SNOWFLAKE_PASSWORD \
+          snowflakecli sql -a $SNOWFLAKE_ACCOUNT -u $SNOWFLAKE_USER -p $SNOWFLAKE_PASSWORD \
           -r $SNOWFLAKE_ROLE -w $SNOWFLAKE_WAREHOUSE -d $SNOWFLAKE_DATABASE -s $SNOWFLAKE_SCHEMA \
           -q "CALL OPS.SP_FILE_INGEST_DUMP();"
 
