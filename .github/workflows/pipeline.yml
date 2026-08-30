@@ -23,6 +23,7 @@ jobs:
           pip install --user snowflake-cli
           echo "$(python -m site --user-base)/bin" >> $GITHUB_PATH
           export PATH="$(python -m site --user-base)/bin:$PATH"
+          ls -l "$(python -m site --user-base)/bin"
           snowflake --help
 
       - name: Run Snowflake Stored Procedure
