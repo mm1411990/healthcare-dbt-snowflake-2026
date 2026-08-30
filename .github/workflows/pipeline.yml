@@ -28,12 +28,10 @@ jobs:
       - name: Configure Snowflake connection
         env:
           SNOWFLAKE_HOST: ${{ secrets.SNOWFLAKE_HOST }}
-          SNOWFLAKE_PORT: ${{ secrets.SNOWFLAKE_PORT }}
-          SNOWFLAKE_PROTOCOL: ${{ secrets.SNOWFLAKE_PROTOCOL }}
-          SNOWFLAKE_REGION: ${{ secrets.SNOWFLAKE_REGION }}
+          SNOWFLAKE_PORT: 443
+          SNOWFLAKE_PROTOCOL: https
+          SNOWFLAKE_REGION: AZURE_CENTRALINDIA
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-          SNOWFLAKE_AUTHENTICATOR: ${{ secrets.SNOWFLAKE_AUTHENTICATOR }}
-          SNOWFLAKE_WORKLOAD_IDP: ${{ secrets.SNOWFLAKE_WORKLOAD_IDP }}
           SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
           SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
@@ -48,8 +46,7 @@ jobs:
             --protocol $SNOWFLAKE_PROTOCOL \
             --region $SNOWFLAKE_REGION \
             --account $SNOWFLAKE_ACCOUNT \
-            --authenticator $SNOWFLAKE_AUTHENTICATOR \
-            --workload-identity-provider $SNOWFLAKE_WORKLOAD_IDP \
+            --authenticator snowflake \
             --username $SNOWFLAKE_USER \
             --password $SNOWFLAKE_PASSWORD \
             --rolename $SNOWFLAKE_ROLE \
