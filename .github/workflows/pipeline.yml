@@ -1,0 +1,49 @@
+name: Healthcare DW Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:   # allows manual trigger
+
+jobs:
+  bronze_ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Run Snowflake Stored Procedure
+        uses: Snowflake-Labs/snowflake-github-action@v1
+        with:
+          account: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          username: ${{ secrets.SNOWFLAKE_USER }}
+          password: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          role: ${{ secrets.SNOWFLAKE_ROLE }}
+          warehouse: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          database: ${{ secrets.SNOWFLAKE_DATABASE }}
+          schema: ${{ secrets.SNOWFLAKE_SCHEMA }}
+          sql: "CALL OPS.SP_FILE_INGEST_DUMP();"
+
+  dbt_transform:
+    runs-on: ubuntu-latest
+    needs: bronze_ingest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dbt
+        run: pip install dbt-core dbt-snowflake
+
+      - name: Run dbt Silver models
+        run: dbt run --select silver/*
+
+      - name: Run dbt Gold models
+        run: dbt run --select gold/*
+
+      - name: Run dbt tests
+        run: dbt test
