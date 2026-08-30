@@ -34,7 +34,17 @@ jobs:
           SNOWSQL_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
           SNOWSQL_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
           SNOWSQL_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
-        run: snow sql --query "CALL OPS.SP_FILE_INGEST_DUMP();"
+        run: |
+          snow sql \
+            --account $SNOWSQL_ACCOUNT \
+            --host $SNOWSQL_HOST \
+            --user $SNOWSQL_USER \
+            --password $SNOWSQL_PWD \
+            --role $SNOWSQL_ROLE \
+            --warehouse $SNOWSQL_WAREHOUSE \
+            --database $SNOWSQL_DATABASE \
+            --schema $SNOWSQL_SCHEMA \
+            --query "CALL OPS.SP_FILE_INGEST_DUMP();"
 
   dbt_transform:
     runs-on: ubuntu-latest
