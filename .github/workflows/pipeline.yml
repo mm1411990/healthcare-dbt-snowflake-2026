@@ -35,6 +35,7 @@ jobs:
           SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
           SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
         run: |
+          export SNOWFLAKE_PASSWORD=$SNOWFLAKE_PASSWORD
           snow connection add \
             --connection-name default \
             --host $SNOWFLAKE_HOST \
@@ -52,4 +53,6 @@ jobs:
       - name: Run Snowflake Stored Procedure
         env:
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
-        run: snow sql --connection-name default --query "CALL OPS.SP_FILE_INGEST_DUMP();"
+        run: |
+          export SNOWFLAKE_PASSWORD=$SNOWFLAKE_PASSWORD
+          snow sql --connection-name default --query "CALL OPS.SP_FILE_INGEST_DUMP();"
