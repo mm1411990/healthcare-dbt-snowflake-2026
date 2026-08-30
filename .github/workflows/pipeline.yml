@@ -40,7 +40,7 @@ jobs:
             --username $SNOWFLAKE_USER \
             --password $SNOWFLAKE_PASSWORD \
             --rolename $SNOWFLAKE_ROLE \
-            --warehousename $SNOWFLAKE_WAREHOUSE \
+            --warehouse $SNOWFLAKE_WAREHOUSE \
             --dbname $SNOWFLAKE_DATABASE \
             --schemaname $SNOWFLAKE_SCHEMA \
             --query "CALL OPS.SP_FILE_INGEST_DUMP();"
