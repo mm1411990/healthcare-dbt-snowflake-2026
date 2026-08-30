@@ -35,7 +35,7 @@ jobs:
           SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
           SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
         run: |
-          snow connection add \
+          snow connection add --connection default \
             --account $SNOWFLAKE_ACCOUNT \
             --username $SNOWFLAKE_USER \
             --password $SNOWFLAKE_PASSWORD \
@@ -45,7 +45,7 @@ jobs:
             --schemaname $SNOWFLAKE_SCHEMA
 
       - name: Run Snowflake Stored Procedure
-        run: snow sql --query "CALL OPS.SP_FILE_INGEST_DUMP();"
+        run: snow sql --connection default --query "CALL OPS.SP_FILE_INGEST_DUMP();"
 
   dbt_transform:
     runs-on: ubuntu-latest
