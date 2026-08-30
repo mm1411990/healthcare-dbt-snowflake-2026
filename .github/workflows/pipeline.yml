@@ -27,6 +27,7 @@ jobs:
 
       - name: Configure Snowflake connection
         env:
+          SNOWFLAKE_HOST: ${{ secrets.SNOWFLAKE_HOST }}
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
@@ -37,6 +38,7 @@ jobs:
         run: |
           snow connection add \
             --connection-name default \
+            --host $SNOWFLAKE_HOST \
             --account $SNOWFLAKE_ACCOUNT \
             --username $SNOWFLAKE_USER \
             --password $SNOWFLAKE_PASSWORD \
