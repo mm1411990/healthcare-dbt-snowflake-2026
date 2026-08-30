@@ -24,7 +24,7 @@ jobs:
           echo "$(python -m site --user-base)/bin" >> $GITHUB_PATH
           export PATH="$(python -m site --user-base)/bin:$PATH"
 
-      - name: Run Snowflake Stored Procedure
+      - name: Configure Snowflake connection
         env:
           SNOWSQL_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWSQL_USER: ${{ secrets.SNOWFLAKE_USER }}
@@ -35,16 +35,22 @@ jobs:
           SNOWSQL_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
           SNOWSQL_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
         run: |
-          snow sql \
-            --account $SNOWSQL_ACCOUNT \
-            --host $SNOWSQL_HOST \
-            --user $SNOWSQL_USER \
-            --password $SNOWSQL_PWD \
-            --role $SNOWSQL_ROLE \
-            --warehouse $SNOWSQL_WAREHOUSE \
-            --database $SNOWSQL_DATABASE \
-            --schema $SNOWSQL_SCHEMA \
-            --query "CALL OPS.SP_FILE_INGEST_DUMP();"
+          mkdir -p ~/.snowflake
+          cat > ~/.snowflake/config.toml <<EOF
+          [connections.default]
+          account = "$SNOWSQL_ACCOUNT"
+          host = "$SNOWSQL_HOST"
+          user = "$SNOWSQL_USER"
+          password = "$SNOWSQL_PWD"
+          role = "$SNOWSQL_ROLE"
+          warehouse = "$SNOWSQL_WAREHOUSE"
+          database = "$SNOWSQL_DATABASE"
+          schema = "$SNOWSQL_SCHEMA"
+          authenticator = "snowflake"
+          EOF
+
+      - name: Run Snowflake Stored Procedure
+        run: snow sql --connection-name default --query "CALL OPS.SP_FILE_INGEST_DUMP();"
 
   dbt_transform:
     runs-on: ubuntu-latest
@@ -74,15 +80,6 @@ jobs:
           export PATH="$(python -m site --user-base)/bin:$PATH"
 
       - name: Run dbt models
-        env:
-          SNOWSQL_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-          SNOWSQL_USER: ${{ secrets.SNOWFLAKE_USER }}
-          SNOWSQL_PWD: ${{ secrets.SNOWFLAKE_PASSWORD }}
-          SNOWSQL_HOST: ${{ secrets.SNOWFLAKE_HOST }}
-          SNOWSQL_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
-          SNOWSQL_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
-          SNOWSQL_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
-          SNOWSQL_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
         run: |
           dbt run --select silver/*
           dbt run --select gold/*
