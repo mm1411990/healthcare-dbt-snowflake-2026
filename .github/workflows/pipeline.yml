@@ -25,7 +25,7 @@ jobs:
           export PATH="$(python -m site --user-base)/bin:$PATH"
           snow --help
 
-      - name: Configure Snowflake connection
+      - name: Run Snowflake Stored Procedure
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
@@ -35,17 +35,15 @@ jobs:
           SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
           SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
         run: |
-          snow connection add --name default \
+          snow sql \
             --account $SNOWFLAKE_ACCOUNT \
-            --user $SNOWFLAKE_USER \
+            --username $SNOWFLAKE_USER \
             --password $SNOWFLAKE_PASSWORD \
-            --role $SNOWFLAKE_ROLE \
-            --warehouse $SNOWFLAKE_WAREHOUSE \
-            --database $SNOWFLAKE_DATABASE \
-            --schema $SNOWFLAKE_SCHEMA
-
-      - name: Run Snowflake Stored Procedure
-        run: snow sql --connection default --query "CALL OPS.SP_FILE_INGEST_DUMP();"
+            --rolename $SNOWFLAKE_ROLE \
+            --warehousename $SNOWFLAKE_WAREHOUSE \
+            --dbname $SNOWFLAKE_DATABASE \
+            --schemaname $SNOWFLAKE_SCHEMA \
+            --query "CALL OPS.SP_FILE_INGEST_DUMP();"
 
   dbt_transform:
     runs-on: ubuntu-latest
