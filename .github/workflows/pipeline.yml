@@ -23,7 +23,6 @@ jobs:
           pip install --user snowflake-cli
           echo "$(python -m site --user-base)/bin" >> $GITHUB_PATH
           export PATH="$(python -m site --user-base)/bin:$PATH"
-          snow --help
 
       - name: Configure Snowflake connection
         env:
@@ -45,11 +44,12 @@ jobs:
             --account $SNOWFLAKE_ACCOUNT \
             --authenticator snowflake \
             --username $SNOWFLAKE_USER \
-            --password $SNOWFLAKE_PASSWORD \
             --rolename $SNOWFLAKE_ROLE \
             --warehouse $SNOWFLAKE_WAREHOUSE \
             --dbname $SNOWFLAKE_DATABASE \
             --schemaname $SNOWFLAKE_SCHEMA
 
       - name: Run Snowflake Stored Procedure
+        env:
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
         run: snow sql --connection-name default --query "CALL OPS.SP_FILE_INGEST_DUMP();"
