@@ -28,9 +28,6 @@ jobs:
       - name: Configure Snowflake connection
         env:
           SNOWFLAKE_HOST: ${{ secrets.SNOWFLAKE_HOST }}
-          SNOWFLAKE_PORT: 443
-          SNOWFLAKE_PROTOCOL: https
-          SNOWFLAKE_REGION: AZURE_CENTRALINDIA
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
@@ -42,9 +39,9 @@ jobs:
           snow connection add \
             --connection-name default \
             --host $SNOWFLAKE_HOST \
-            --port $SNOWFLAKE_PORT \
-            --protocol $SNOWFLAKE_PROTOCOL \
-            --region $SNOWFLAKE_REGION \
+            --port 443 \
+            --protocol https \
+            --region AZURE_CENTRALINDIA \
             --account $SNOWFLAKE_ACCOUNT \
             --authenticator snowflake \
             --username $SNOWFLAKE_USER \
