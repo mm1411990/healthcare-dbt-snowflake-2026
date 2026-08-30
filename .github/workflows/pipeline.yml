@@ -51,7 +51,7 @@ jobs:
           chmod 0600 ~/.snowflake/config.toml
 
       - name: Run Snowflake Stored Procedure
-        run: snow sql --connection-name default --query "CALL OPS.SP_FILE_INGEST_DUMP();"
+        run: snow sql --connection default --query "CALL OPS.SP_FILE_INGEST_DUMP();"
 
   dbt_transform:
     runs-on: ubuntu-latest
