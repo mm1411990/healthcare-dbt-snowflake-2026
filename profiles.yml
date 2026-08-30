@@ -1,0 +1,13 @@
+healthcare_dw:
+  outputs:
+    dev:
+      account: XKBMMTJ-LP96513
+      database: DX_DEV
+      password: 8080dev@12PMPM
+      role: ACCOUNTADMIN
+      schema: SILVER
+      threads: 1
+      type: snowflake
+      user: NEWJOB2026
+      warehouse: OPS_WH
+  target: dev

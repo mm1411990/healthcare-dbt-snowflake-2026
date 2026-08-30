@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: azure_files_load
+    database: DX_DEV
+    schema: bronze
+    tables:
+      - name: claims
+      - name: members
+      - name: providers

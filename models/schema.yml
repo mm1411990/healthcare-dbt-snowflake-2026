@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: claims
+    columns:
+      - name: claim_id
+        tests: [unique, not_null]
+      - name: claim_type
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['INPATIENT','OUTPATIENT']
+
+  - name: members
+    columns:
+      - name: member_id
+        tests: [unique, not_null]
+      - name: dob
+        tests: [not_null]
+
+  - name: providers
+    columns:
+      - name: npi
+        tests:
+          - not_null
